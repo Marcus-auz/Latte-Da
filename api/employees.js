@@ -76,6 +76,7 @@ employeesrouter.get('/:employeeId',(req,res,next)=>{
     res.status(200).json({employee:req.employee});
 });
 
+//updating the employee with the passed id 
 employeesrouter.put('/:employeeId',(req,res,next)=>{
     //fetched all required fields 
     const name=req.body.employee.name;
@@ -97,6 +98,7 @@ employeesrouter.put('/:employeeId',(req,res,next)=>{
         $isCurrentEmployee: is_current_employee,
         $employeeId: req.params.employeeId
     };
+    //returned the employee after updating the data
     db.run(sql,values,(err)=>{
         if(err){
             next(err)
@@ -106,6 +108,24 @@ employeesrouter.put('/:employeeId',(req,res,next)=>{
             });
         }
     }); 
+});
+
+//delete the employee (basically instead of deleting just making him un-employed)
+employeesrouter.delete('/:employeeId',(req,res,next)=>{
+    //query to set emp status =0
+    const sql='UPDATE Employee SET is_current_employee=0 WHERE Employee.id=$employeeId';
+    const values={
+        $employeeId:req.params.employeeId
+    };
+    db.run(sql,values,(err)=>{
+        if(err){
+            next(err);
+        }else{
+            db.get(`SELECT * FROM Employee WHERE Employee.id=${req.params.employeeId}`,(err,employee)=>{
+                res.status(200).json({employee:employee});
+            });
+        }
+    });
 });
 
 module.exports=employeesrouter;
