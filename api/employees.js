@@ -76,5 +76,36 @@ employeesrouter.get('/:employeeId',(req,res,next)=>{
     res.status(200).json({employee:req.employee});
 });
 
+employeesrouter.put('/:employeeId',(req,res,next)=>{
+    //fetched all required fields 
+    const name=req.body.employee.name;
+    const position=req.body.employee.position;
+    const wage=req.body.employee.wage;
+    const is_current_employee=req.body.is_current_employee ===0 ? 0:1;
+    //if any required field is missing
+    if(!name ||!position ||!wage){
+        return res.sendStatus(400);
+    }
+    //query to update data with passed fields
+    const sql = 'UPDATE Employee SET name = $name, position = $position, ' +
+      'wage = $wage, is_current_employee = $isCurrentEmployee ' +
+      'WHERE Employee.id = $employeeId';
+    const values = {
+        $name: name,
+        $position: position,
+        $wage: wage,
+        $isCurrentEmployee: is_current_employee,
+        $employeeId: req.params.employeeId
+    };
+    db.run(sql,values,(err)=>{
+        if(err){
+            next(err)
+        }else{
+            db.get(`SELECT * FROM Employee WHERE Employee.id=${req.params.employeeId}`,(err,employee)=>{
+                res.status(200).json({employee:employee});
+            });
+        }
+    }); 
+});
 
 module.exports=employeesrouter;
