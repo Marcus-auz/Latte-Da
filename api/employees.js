@@ -4,6 +4,26 @@ const sqlite3=require('sqlite3');
 //database loaded
 const db=new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite');
 
+//param method to fetch the specefic id passed
+employeesrouter.param('employeeId',(req,res,next,employeeId)=>{
+    //query to select that id
+    const sql='SELECT * FROM Employee WHERE Employee.id=$employeeId';
+    const values={
+        $employeeId:employeeId
+    };
+    //if error then passed to middleware chain else employee found is attached to req.employee
+    db.get(sql,values,(err,employee)=>{
+        if(err){
+            next(err);
+        }else if(employee){
+            req.employee=employee;
+            next();
+        }else{
+            res.sendStatus(404);    //if no employee with that specefic id
+        }
+    });
+});
+
 //will respond to get request on /api/employees/ ,return a res with all employees currently employed
 //since requested on this route so req , will get a res and next to pass err to middleware
 employeesrouter.get('/',(req,res,next)=>{
@@ -49,6 +69,11 @@ employeesrouter.post('/',(req,res,next)=>{
         }
     });
 
+});
+
+//employee on req.employee (from param request) is passed as response 
+employeesrouter.get('/:employeeId',(req,res,next)=>{
+    res.status(200).json({employee:req.employee});
 });
 
 
