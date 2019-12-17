@@ -1,6 +1,7 @@
 const express=require('express');
 const employeesrouter=express.Router();
 const sqlite3=require('sqlite3');
+const timesheetrouter=require('./timesheets');
 //database loaded
 const db=new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite');
 
@@ -109,6 +110,8 @@ employeesrouter.put('/:employeeId',(req,res,next)=>{
         }
     }); 
 });
+//timesheet router mounted 
+employeesrouter.use('/:employeeId/timesheets',timesheetrouter);
 
 //delete the employee (basically instead of deleting just making him un-employed)
 employeesrouter.delete('/:employeeId',(req,res,next)=>{
