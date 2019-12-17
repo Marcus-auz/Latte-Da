@@ -25,6 +25,9 @@ employeesrouter.param('employeeId',(req,res,next,employeeId)=>{
     });
 });
 
+//timesheet router mounted 
+employeesrouter.use('/:employeeId/timesheets',timesheetrouter);
+
 //will respond to get request on /api/employees/ ,return a res with all employees currently employed
 //since requested on this route so req , will get a res and next to pass err to middleware
 employeesrouter.get('/',(req,res,next)=>{
@@ -110,8 +113,6 @@ employeesrouter.put('/:employeeId',(req,res,next)=>{
         }
     }); 
 });
-//timesheet router mounted 
-employeesrouter.use('/:employeeId/timesheets',timesheetrouter);
 
 //delete the employee (basically instead of deleting just making him un-employed)
 employeesrouter.delete('/:employeeId',(req,res,next)=>{
