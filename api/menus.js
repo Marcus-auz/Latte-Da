@@ -1,6 +1,7 @@
 const express=require('express');
 const menurouter=express.Router();
 const sqlite3=require('sqlite3');
+const menuitemrouter=require('./menu-item');
 const db=new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite');
 
 menurouter.param('menuId',(req,res,next,menuId)=>{
@@ -19,6 +20,8 @@ menurouter.param('menuId',(req,res,next,menuId)=>{
         }
     });
 });
+
+menurouter.use('/:menuId/menu-items',menuitemrouter);
 
 menurouter.get('/',(req,res,next)=>{
     db.get('SELECT * FROM Menu',(err,menu)=>{
@@ -76,6 +79,6 @@ menurouter.put('/menuId',(req,res,next)=>{
 });
 
 menurouter.delete('/menuId',(req,res,next)=>{
-    
+
 })
 module.exports=menurouter;
